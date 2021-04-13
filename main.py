@@ -61,6 +61,7 @@ class Method:
         :param path: 输出路径
         :type path: str
         """
+        list_.sort()
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('结果')
         longest_ip = max(list_, key=len)
@@ -215,20 +216,21 @@ def main():
     docx = Docx()
     method = Method()
     ip_check = IPCheck()
-    output_path = "Excel/res.xls"
-    path_ip = "Doc/ip-2021-4-12-jt.doc"
+    output_path = "Excel/dw.xls"
+    path_ip = "Doc/ip-2021-4-12-dw.docx"
 
     # 获取文件中的所有ip
     ip_docx_list = method.de_duplication(docx.get_data_de_mac(path_ip))
 
     # 获取数据库中的所有ip
-    ip_db_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql.search_jt_ip())))
+    ip_db_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql.search_dw_ip())))
 
     method.console("文件: ")
     print(ip_docx_list.__len__(), ip_docx_list)
     method.console("数据库: ")
     print(ip_db_list.__len__(), ip_db_list)
 
+    # 比较文件中的ip和数据库中的ip
     res = method.compare(ip_docx_list, ip_db_list)
     method.console("文件有数据库没有: ")
     print(res.__len__(), res)
