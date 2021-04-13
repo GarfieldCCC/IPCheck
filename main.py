@@ -63,8 +63,11 @@ class Method:
         """
         workbook = xlwt.Workbook(encoding='utf-8')
         worksheet = workbook.add_sheet('结果')
+        longest_ip = max(list_, key=len)
+
         for i in range(list_.__len__()):
             worksheet.write(i + 1, 0, label=list_[i])
+        worksheet.col(0).width = 256 * (longest_ip.__len__() + 1)
         workbook.save(path)
         self.info = "Successfully output! "
 
