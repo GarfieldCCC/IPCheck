@@ -81,30 +81,78 @@ class SQL:
         self.select_cyy_ip = "select ip from ip_record where area = '产业园'"
         self.select_jt_ip = "select ip from ip_record where area = '集团'"
         self.select_dw_ip = "select ip from ip_record where area = '代王'"
+        self.select_cyy_ip_seg = "select area, net_manager from	ip_record where area = '产业园' and ip "
+        self.select_jt_ip_seg = "select area, net_manager from	ip_record where area = '集团' and ip "
+        self.select_dw_ip_seg = "select area, net_manager from	ip_record where area = '代王' and ip "
 
     def search_cyy(self):
-        """产业园所有数据的查询语句"""
+        """产业园所有数据的查询语句
+
+        :rtype: str
+        """
         return self.select_cyy
 
     def search_jt(self):
-        """集团所有数据的查询语句"""
+        """集团所有数据的查询语句
+
+        :rtype: str
+        """
         return self.select_jt
 
     def search_dw(self):
-        """代王所有数据的查询语句"""
+        """代王所有数据的查询语句
+
+        :rtype: str
+        """
         return self.select_dw
 
     def search_cyy_ip(self):
-        """产业园所有IP的查询语句"""
+        """产业园所有IP的查询语句
+
+        :rtype: str
+        """
         return self.select_cyy_ip
 
     def search_jt_ip(self):
-        """集团所有IP的查询语句"""
+        """集团所有IP的查询语句
+
+        :rtype: str
+        """
         return self.select_jt_ip
 
     def search_dw_ip(self):
-        """代王所有IP的查询语句"""
+        """代王所有IP的查询语句
+
+        :rtype: str
+        """
         return self.select_dw_ip
+
+    def search_cyy_ip_seg(self, seg):
+        """产业园某IP网段的查询语句
+
+        :param seg: like + 网段 + %
+        :type seg: str
+        :rtype: str
+        """
+        return self.select_cyy_ip_seg + seg
+
+    def search_jt_ip_seg(self, seg):
+        """集团某IP网段的查询语句
+
+        :param seg: like + 网段 + %
+        :type seg: str
+        :rtype: str
+        """
+        return self.select_jt_ip_seg + seg
+
+    def search_dw_ip_seg(self, seg):
+        """代王某IP网段的查询语句
+
+        :param seg: like + 网段 + %
+        :type seg: str
+        :rtype: str
+        """
+        return self.select_dw_ip_seg + seg
 
 
 class Docx:
