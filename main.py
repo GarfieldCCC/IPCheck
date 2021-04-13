@@ -2,6 +2,7 @@ import pymysql
 from docx import Document
 import win32com.client as wc
 import os
+import xlwt
 
 
 class Method:
@@ -60,6 +61,12 @@ class Method:
         :param path: 输出路径
         :type path: str
         """
+        workbook = xlwt.Workbook(encoding='utf-8')
+        worksheet = workbook.add_sheet('结果')
+        for i in range(list_.__len__()):
+            worksheet.write(i + 1, 0, label=list_[i])
+        workbook.save(path)
+        self.info = "Successfully output! "
 
 
 class SQL:
@@ -205,6 +212,7 @@ def main():
     docx = Docx()
     method = Method()
     ip_check = IPCheck()
+    output_path = "Excel/res.xls"
     path_ip = "Doc/ip-2021-4-12-jt.doc"
 
     # 获取文件中的所有ip
@@ -221,6 +229,8 @@ def main():
     res = method.compare(ip_docx_list, ip_db_list)
     method.console("文件有数据库没有: ")
     print(res.__len__(), res)
+    # 将结果输出至excel表格
+    method.output_to_excel(res, output_path)
 
     res_t = method.compare(ip_db_list, ip_docx_list)
     method.console("数据库有文件没有: ")
