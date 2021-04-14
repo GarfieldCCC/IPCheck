@@ -50,7 +50,7 @@ class Method:
 
     def console(self, info):
         self.info = "Successfully print! "
-        print(info)
+        print(info + " -- 文件有数据库没有: ")
 
     def output_to_excel(self, list_, list_em, path):
         """
@@ -118,99 +118,49 @@ class Method:
 
 class SQL:
     def __init__(self):
-        self.select_cyy = "select * from ip_record where area = '产业园'"
-        self.select_jt = "select * from ip_record where area = '集团'"
-        self.select_dw = "select * from ip_record where area = '代王'"
-        self.select_cyy_ip = "select ip from ip_record where area = '产业园'"
-        self.select_jt_ip = "select ip from ip_record where area = '集团'"
-        self.select_dw_ip = "select ip from ip_record where area = '代王'"
-        self.select_cyy_ip_seg = "select area, net_manager from ip_record where area = '产业园' and ip "
-        self.select_jt_ip_seg = "select area, net_manager from ip_record where area = '集团' and ip "
-        self.select_dw_ip_seg = "select area, net_manager from ip_record where area = '代王' and ip "
+        self.select = "select * from ip_record where area "
+        self.select_ip = "select ip from ip_record where area "
+        self.select_ip_seg = "select area, net_manager from ip_record where area "
         self.select_net_manager = "select username from t_user where employeeNum "
         self.method = Method()
 
-    def search_cyy(self):
-        """产业园所有数据的查询语句
-
-        :rtype: str
+    def search(self, area):
         """
-        return self.select_cyy
+        返回一条查询语句
 
-    def search_jt(self):
-        """集团所有数据的查询语句
+        :param area: 区域
+        :type area: str
 
-        :rtype: str
+        :return: "select * from ip_record where area = area"
+        rtype: str
         """
-        return self.select_jt
+        return self.select + "= '" + area + "'"
 
-    def search_dw(self):
-        """代王所有数据的查询语句
-
-        :rtype: str
+    def search_ip(self, area):
         """
-        return self.select_dw
+        返回一条查询语句
 
-    def search_cyy_ip(self):
-        """产业园所有IP的查询语句
+        :param area: 区域
+        :type area: str
 
-        :rtype: str
+        :return: "select ip from ip_record where area = area"
+        rtype: str
         """
-        return self.select_cyy_ip
+        return self.select_ip + "= '" + area + "'"
 
-    def search_jt_ip(self):
-        """集团所有IP的查询语句
-
-        :rtype: str
-        """
-        return self.select_jt_ip
-
-    def search_dw_ip(self):
-        """代王所有IP的查询语句
-
-        :rtype: str
-        """
-        return self.select_dw_ip
-
-    def select_cyy_ip_segment(self, ip):
+    def search_ip_segment(self, area, ip):
         """
         生成产业园ip网段查询的sql语句
 
+        :param area: 区域
+        :type area: str
         :param ip: ip地址
         :type ip: str
 
-        :return: select area, net_manager from ip_record where area = '产业园' and ip = xxx.xxx.xxx.%
+        :return: select area, net_manager from ip_record where area = 'area' and ip = xxx.xxx.xxx.%
         :rtype: str
         """
-        sql_ = self.select_cyy_ip_seg + self.method.like_condition(ip)
-        # print(sql_)
-        return sql_
-
-    def select_jt_ip_segment(self, ip):
-        """
-        生成集团ip网段查询的sql语句
-
-        :param ip: ip地址
-        :type ip: str
-
-        :return: select area, net_manager from ip_record where area = '集团' and ip = xxx.xxx.xxx.%
-        :rtype: str
-        """
-        sql_ = self.select_jt_ip_seg + self.method.like_condition(ip)
-        # print(sql_)
-        return sql_
-
-    def select_dw_ip_segment(self, ip):
-        """
-        生成代王ip网段查询的sql语句
-
-        :param ip: ip地址
-        :type ip: str
-
-        :return: select area, net_manager from ip_record where area = '代王' and ip = xxx.xxx.xxx.%
-        :rtype: str
-        """
-        sql_ = self.select_dw_ip_seg + self.method.like_condition(ip)
+        sql_ = self.select_ip_seg + "= '" + area + "' and ip " + self.method.like_condition(ip)
         # print(sql_)
         return sql_
 
@@ -338,98 +288,58 @@ def main():
     docx = Docx()
     method = Method()
     ip_check = IPCheck()
-    output_path_cyy = "Excel/cyy.xls"
-    output_path_jt = "Excel/jt.xls"
-    output_path_dw = "Excel/dw.xls"
+    cyy = "产业园"
+    jt = "集团"
+    dw = "代王"
+    output_path_cyy = "Excel/" + cyy + ".xls"
+    output_path_jt = "Excel/" + jt + ".xls"
+    output_path_dw = "Excel/" + dw + ".xls"
     path_ip_cyy = "Doc/ip-2021-4-12-cyy.doc"
     path_ip_jt = "Doc/ip-2021-4-12-jt.doc"
     path_ip_dw = "Doc/ip-2021-4-12-dw.docx"
 
-    # 获取文件中的所有ip
-    ip_docx_list = method.de_duplication(docx.get_data_de_mac(path_ip_cyy))
+    def process(file_path, output_path, area):
+        """
+        主流程
 
-    # 获取数据库中的所有ip
-    ip_db_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql.search_cyy_ip())))
+        :param file_path: 文件目录
+        :type file_path: str
+        :param output_path: 输出目录
+        :type output_path: str
+        :param area: 区域
+        :type area: str
+        """
 
-    # 比较文件中的ip和数据库中的ip
-    res = method.compare(ip_docx_list, ip_db_list)
-    method.console("产业园 -- 文件有数据库没有: ")
-    print(res.__len__(), res, "\n")
-    res.sort()
+        # 获取文件中的所有ip
+        ip_docx_list = method.de_duplication(docx.get_data_de_mac(file_path))
 
-    res_a = []
-    for ip in res:
-        sql_select = sql.select_cyy_ip_segment(ip)
-        ip_seg_list = method.de_duplication(ip_check.execute_search(sql_select))
-        employee_list = []
-        if ip_seg_list.__len__() != 0:
-            for em in ip_seg_list:
-                sql_select = sql.select_net_managers(em[1])
-                em_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql_select)))
-                employee_list.append(em_list[0])
-        res_a.append(", ".join(employee_list))
-    print(res_a.__len__(), res_a)
+        # 获取数据库中的所有ip
+        ip_db_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql.search_ip(area))))
 
-    # 将结果输出至excel表格
-    method.output_to_excel(res, res_a, output_path_cyy)
+        # 比较文件中的ip和数据库中的ip
+        res = method.compare(ip_docx_list, ip_db_list)
+        method.console(area)
+        print(res.__len__(), res, "\n")
+        res.sort()
 
+        res_a = []
+        for ip in res:
+            sql_select = sql.search_ip_segment(area, ip)
+            ip_seg_list = method.de_duplication(ip_check.execute_search(sql_select))
+            employee_list = []
+            if ip_seg_list.__len__() != 0:
+                for em in ip_seg_list:
+                    sql_select = sql.select_net_managers(em[1])
+                    em_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql_select)))
+                    employee_list.append(em_list[0])
+            res_a.append(", ".join(employee_list))
 
-    # 获取文件中的所有ip
-    ip_docx_list = method.de_duplication(docx.get_data_de_mac(path_ip_jt))
+        # 将结果输出至excel表格
+        method.output_to_excel(res, res_a, output_path)
 
-    # 获取数据库中的所有ip
-    ip_db_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql.search_jt_ip())))
-
-    # 比较文件中的ip和数据库中的ip
-    res = method.compare(ip_docx_list, ip_db_list)
-    method.console("集团 -- 文件有数据库没有: ")
-    print(res.__len__(), res, "\n")
-    res.sort()
-
-    res_a = []
-    for ip in res:
-        sql_select = sql.select_jt_ip_segment(ip)
-        ip_seg_list = method.de_duplication(ip_check.execute_search(sql_select))
-        employee_list = []
-        if ip_seg_list.__len__() != 0:
-            for em in ip_seg_list:
-                sql_select = sql.select_net_managers(em[1])
-                em_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql_select)))
-                employee_list.append(em_list[0])
-        res_a.append(", ".join(employee_list))
-    print(res_a.__len__(), res_a)
-
-    # 将结果输出至excel表格
-    method.output_to_excel(res, res_a, output_path_jt)
-
-
-    # 获取文件中的所有ip
-    ip_docx_list = method.de_duplication(docx.get_data_de_mac(path_ip_dw))
-
-    # 获取数据库中的所有ip
-    ip_db_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql.search_dw_ip())))
-
-    # 比较文件中的ip和数据库中的ip
-    res = method.compare(ip_docx_list, ip_db_list)
-    method.console("代王 -- 文件有数据库没有: ")
-    print(res.__len__(), res, "\n")
-    res.sort()
-
-    res_a = []
-    for ip in res:
-        sql_select = sql.select_dw_ip_segment(ip)
-        ip_seg_list = method.de_duplication(ip_check.execute_search(sql_select))
-        employee_list = []
-        if ip_seg_list.__len__() != 0:
-            for em in ip_seg_list:
-                sql_select = sql.select_net_managers(em[1])
-                em_list = method.de_duplication(method.remove_brackets(ip_check.execute_search(sql_select)))
-                employee_list.append(em_list[0])
-        res_a.append(", ".join(employee_list))
-    print(res_a.__len__(), res_a)
-
-    # 将结果输出至excel表格
-    method.output_to_excel(res, res_a, output_path_dw)
+    process(path_ip_cyy, output_path_cyy, cyy)
+    process(path_ip_jt, output_path_jt, jt)
+    process(path_ip_dw, output_path_dw, dw)
 
 
 if __name__ == '__main__':
