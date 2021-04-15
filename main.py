@@ -150,7 +150,7 @@ class SQL:
 
     def search_ip_segment(self, area, ip):
         """
-        生成产业园ip网段查询的sql语句
+        生成ip网段查询的sql语句
 
         :param area: 区域
         :type area: str
@@ -166,12 +166,12 @@ class SQL:
 
     def select_net_managers(self, employee):
         """
-        生成代王ip网段查询的sql语句
+        生成网管员查询的sql语句
 
         :param employee: 员工工号
         :type employee: str
 
-        :return: 一段完整的sql语句
+        :return: select username from t_user where employeeNum = '008105'
         :rtype: str
         """
         sql_ = self.select_net_manager + self.method.equal_condition(employee)
